@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../lib/materialize/materialize.min.css" media="screen,projection"/>
+
+    <style type="text/css">
+        .preloader-background {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eee;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #panell {
+            margin-top: 100px;
+            padding: 0px;
+        }
+        #loginbtn {
+            width: 250px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        #title {
+            background-color: #2bbbad;
+            color: white;
+            padding: 8px;
+            margin-top: 0px
+        }
+        form {
+            padding: 0px;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        #username, #password {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        #checkbox {
+            margin-left: 30px;
+        }
+    </style>
+
+    <script type="text/javascript" src="../lib/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../lib/materialize/materialize.min.js"></script>
+    <script src="../lib/firebase/firebase.js"></script>
+    <script src="main.js"></script>
+    <script src="../config/config.js"></script>
+    <script>
+        $( document ).ready(function() {
+            controller.onCreate();
+            controller.onDeviceReady()
+        });
+    </script>
+</head>
+<body>
+
+<div class="preloader-background">
+    <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <ul class="collection">
+        <li class="collection-item center-align" id="profile_name">[profile_name]</li>
+        <li class="collection-item center-align" id="profile_id">[profile_id]</li>
+        <li class="collection-item center-align">
+            <div class="row">
+                <a id="upload_btn" href="#" class="collection-item">Upload file</a>
+            </div>
+        </li>
+        <li class="collection-item center-align">
+            <div class="row">
+                <a id="file_list_btn" href="#" class="collection-item">File list</a>
+            </div>
+        </li>
+        <li class="collection-item center-align">
+            <div class="row">
+                <a id="simulator_btn" href="#" class="collection-item">Simulator</a>
+            </div>
+        </li>
+        <li class="collection-item center-align">
+            <div class="row">
+                <a id="logout_btn" href="#" class="collection-item">Logout</a>
+            </div>
+        </li>
+    </ul>
+</div>
+
+
+</body>
+</html>

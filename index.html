@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script src="lib/firebase/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBtqS2WQPTXSZkuN9gATBLXQH_NBEP8Ibw",
+            authDomain: "spw-simulation.firebaseapp.com",
+            databaseURL: "https://spw-simulation.firebaseio.com",
+            projectId: "spw-simulation",
+            storageBucket: "spw-simulation.appspot.com",
+            messagingSenderId: "852272376041"
+        };
+        firebase.initializeApp(config);
+
+        console.log(window.location)
+
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                window.location.href = "/SPW-Symulator/main/main.html";
+            } else {
+                window.location.href = "/SPW-Symulator/login/login.html";
+            }
+        });
+
+
+    </script>
+
+
+</head>
+<body>
+
+    <div class="preloader-background">
+        <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

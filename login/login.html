@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../lib/materialize/materialize.min.css" media="screen,projection"/>
+
+    <style type="text/css">
+        .preloader-background {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eee;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #panell {
+            margin-top: 100px;
+            padding: 0px;
+        }
+        #loginbtn {
+            width: 250px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        #title {
+            background-color: #2bbbad;
+            color: white;
+            padding: 8px;
+            margin-top: 0px
+        }
+        form {
+            padding: 0px;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        #username, #password {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        #checkbox {
+            margin-left: 30px;
+        }
+    </style>
+
+    <script type="text/javascript" src="../lib/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../lib/materialize/materialize.min.js"></script>
+    <script src="../lib/firebase/firebase.js"></script>
+    <script src="login.js"></script>
+    <script src="../config/config.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                controller.navigateToMain();
+            }
+        });
+        $( document ).ready(function() {
+            controller.onCreate();
+            controller.onDeviceReady()
+        });
+    </script>
+
+</head>
+<body>
+
+<div class="preloader-background">
+    <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+
+        <div id="panell">
+            <form>
+                <div class="input-field" id="username">
+                    <input id="login_input" type="text" class="validate">
+                    <label for="username">Username</label>
+                </div>
+
+                <div class="row">
+                    <div class="input-field" id="password">
+                        <input id="password_input" type="password" class="validate">
+                        <label for="password">Password</label>
+                    </div>
+                </div>
+
+                <p class="center-align"><a class="waves-effect waves-light btn" id="loginbtn">Sign in</a></p>
+
+                <p class="center-align">Don't have an account? </p>
+                <p class="center-align"><a class="waves-effect waves-green btn-flat" id="registerbtn">Sign up</a></p>
+
+                <p id="errorlabel" class="red-text"></p>
+
+                <a class="waves-effect waves-green btn-flat" id="googlebtn">Google +</a>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+</html>
