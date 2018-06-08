@@ -5,10 +5,8 @@ var controller = {
     profile_id : null,
     upload_btn : null,
     file_list_btn : null,
-    simulator_btn : null,
 
-    onCreate: function () {
-    },
+    onCreate: function () { },
 
     onDeviceReady: function () {
         this.logoutButton = $("#logout_btn");
@@ -16,19 +14,19 @@ var controller = {
         this.file_list_btn = $("#file_list_btn");
         this.profile_id = $("#profile_id");
         this.upload_btn = $("#upload_btn");
-        this.simulator_btn = $("#simulator_btn");
+        this.results_btn = $("#results_btn");
 
         this.logoutButton.click(this.onClickedLogout.bind(this));
         this.upload_btn.click(this.navigateToUpload.bind(this));
         this.file_list_btn.click(this.navigateToFileList.bind(this));
-        this.simulator_btn.click(this.navigateToSimulator.bind(this));
+        this.results_btn.click(this.navigateToResults.bind(this));
 
         controller.showLoader();
         firebase.auth().onAuthStateChanged(function (user) {
             controller.hideLoader();
             if(!user){
                 controller.navigateToLogin();
-            }else {
+            }else{
                 controller.profile_name.html("Email: " + user.email);
                 controller.profile_id.html("User id: " + user.uid);
                 console.log(user);
@@ -59,6 +57,10 @@ var controller = {
 
     navigateToSimulator : function () {
         window.location.href = "/SPW-Symulator/simulator/simulator.html";
+    },
+
+    navigateToResults : function () {
+        window.location.href = "/SPW-Symulator/results/results.html";
     },
 
     showLoader: function () {

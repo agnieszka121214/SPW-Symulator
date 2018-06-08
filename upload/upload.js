@@ -17,12 +17,12 @@ var controller = {
         const name = (+new Date()) + '-' + file.name;
         const metadata = { contentType: file.type };
         const uid = firebase.auth().currentUser.uid;
-        const task = ref.child( "files/" + uid + "/" + name).put(file, metadata);
+        const task = ref.child( "files/" + name).put(file, metadata);
         this.showLoader();
         task.then((snapshot) => {
             console.log(snapshot);
             snapshot.ref.getDownloadURL().then(function(downloadURL) {
-                const ref = firebase.database().ref("files/" + uid);
+                const ref = firebase.database().ref("files");
                 const data = {
                     filename: snapshot.metadata.name,
                     url: downloadURL

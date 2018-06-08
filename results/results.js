@@ -6,13 +6,20 @@ var controller = {
 
     onDeviceReady: function () {
         controller.showLoader();
-        const ref = firebase.database().ref('files');
-        ref.on('value', function(snapshot) {
-            controller.hideLoader();
-            controller.displayFilesList(snapshot.val());
-        }).catch(function(error) {
-            controller.hideLoader();
-            console.log(error);
+        firebase.auth().onAuthStateChanged(function (user) {
+            if(!user){
+                controller.navigateToLogin();
+            }else {
+                const userId = firebase.auth().currentUser.uid;
+                const ref = firebase.database().ref('results/' + userId);
+                ref.once('value').then(function (snapshot) {
+                    controller.hideLoader();
+                    controller.displayFilesList(snapshot.val());
+                }).catch(function(error) {
+                    controller.hideLoader();
+                    console.log(error);
+                });
+            }
         });
     },
 
@@ -25,7 +32,7 @@ var controller = {
             console.log(file);
             template += "<li class=\"collection-item center-align\">\n" +
                 "            <div class=\"row\">\n" +
-                "                <a class=\"file_btn\" href='#' data-name='"+file.filename+"' data-url=\""+ file.url +"\" class=\"collection-item\">"+file.filename+"</a>\n" +
+                "                <a class=\"file_btn\" href=\""+ file.url +"\" class=\"collection-item\">"+file.filename+"</a>\n" +
                 "            </div>\n" +
                 "        </li>";
         }
@@ -34,9 +41,7 @@ var controller = {
         $("#files_list").html(template);
         $( ".file_btn" ).click(function() {
             var url = $( this ).attr("data-url");
-            var filename = $( this ).attr("data-name");
             localStorage.setItem("url", url);
-            localStorage.setItem("filename", filename);
             controller.navigateToSimulator();
         });
 

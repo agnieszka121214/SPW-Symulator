@@ -1,240 +1,138 @@
 <!doctype html>
 <html>
 <head>
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="../lib/materialize/materialize.min.css" media="screen,projection"/>
+    <script src="../lib/html2Canvas/html2Canvas.js"></script>
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <script type="text/javascript" src="../lib/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../lib/materialize/materialize.min.js"></script>
+    <script src="../lib/firebase/firebase.js"></script>
+    <script src="simulator.js"></script>
+
+    <style type="text/css">
+        .preloader-background {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eee;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #panell {
+            margin-top: 100px;
+            padding: 0px;
+        }
+        #loginbtn {
+            width: 250px;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+        #title {
+            background-color: #2bbbad;
+            color: white;
+            padding: 8px;
+            margin-top: 0px
+        }
+        form {
+            padding: 0px;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        #username, #password {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+        #checkbox {
+            margin-left: 30px;
+        }
+    </style>
+    <script src="../config/config.js"></script>
+    <script>
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (!user) {
+                controller.navigateToLogin();
+            }
+        });
+        $( document ).ready(function() {
+            controller.onCreate();
+            controller.onDeviceReady()
+        });
+
+    </script>
 </head>
 <body>
-<canvas width = "570" height = "570" id = "my_Canvas"></canvas>
 
-<script>
+    <div class="preloader-background">
+    <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+    </div>
 
-    $.ajax({
-        url: 'https://firebasestorage.googleapis.com/v0/b/spw-simulation.appspot.com/o/files%2F0vOFOlK939epaXPicY5okJ8afLS2%2F1528133149243-temperature%2000001.k?alt=media&token=c72bfc06-9c26-44df-a4e1-7d10944b000c',
-        contentType: false,
-        processData: false,
-        success: function (data) {
-            alert(data);
-        }
-    });
-
-
-    /*============= Creating a canvas =================*/
-    var canvas = document.getElementById('my_Canvas');
-    gl = canvas.getContext('experimental-webgl');
-
-    /*============ Defining and storing the geometry =========*/
-
-    var vertices = [
-        0.00000,        0.00000,        0.00000,
-        0.00200,        0.00000,        0.00000,
-        0.00200,        0.00200,        0.00000,
-        0.00000,        0.00200,        0.00000,
-        0.00000,        0.00000,        0.00200,
-        0.00200,        0.00000,        0.00200,
-        0.00000,        0.00200,        0.00200,
-        0.00200,        0.00200,        0.00200
-    ];
-
-    for(var i = 0 ; i < vertices.length ; i ++){
-        vertices[i] *= 1000;
-    }
-
-    var colors = [
-        0,0,1, 0,0,1, 0,0,1, 0,1,1,
-        0,0,1, 0,1,1, 0,1,1, 0,0,1,
-    ];
-
-    var indices = [
-        0,   1,   2,   3, 4, 5, 7, 6
-    ];
-
-    var tab = [];
-
-    for(var i = 0 ; i < indices.length ; i+= 8){
-        var v0 = indices[i];
-        var v1 = indices[i+1];
-        var v2 = indices[i+2];
-        var v3 = indices[i+3];
-        var v4 = indices[i+4];
-        var v5 = indices[i+5];
-        var v6 = indices[i+6];
-        var v7 = indices[i+7];
-        tab = tab.concat([v0,v2,v3]);
-        tab = tab.concat([v0,v1,v2]);
-        tab = tab.concat([v1,v2,v5]);
-        tab = tab.concat([v2,v6,v5]);
-        tab = tab.concat([v7,v5,v6]);
-        tab = tab.concat([v7,v4,v5]);
-        tab = tab.concat([v0,v4,v7]);
-        tab = tab.concat([v0,v3,v7]);
-        tab = tab.concat([v3,v7,v2]);
-        tab = tab.concat([v7,v6,v2]);
-        tab = tab.concat([v0,v4,v1]);
-        tab = tab.concat([v4,v1,v5]);
-    }
-
-    indices = tab;
+    <canvas width = "800" height = "500" id = "my_Canvas"></canvas>
+    <a id="btn_save_simulation" class="waves-effect waves-light btn">Save simulation</a>
 
 
-    // Create and store data into vertex buffer
-    var vertex_buffer = gl.createBuffer ();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    <div class="row">
 
-    // Create and store data into color buffer
-    var color_buffer = gl.createBuffer ();
-    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        <form class="col s12">
 
-    // Create and store data into index buffer
-    var index_buffer = gl.createBuffer ();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+            <div class="row">
+                <div class="input-field col s1">
+                    <a id="btn_rotate_left" class="waves-effect waves-light btn"><</a>
+                </div>
+                <div class="input-field col s1">
+                    <a id="btn_rotate_right" class="waves-effect waves-light btn">></a>
+                </div>
+                <div class="input-field col s1">
+                    <a id="btn_rotate_up" class="waves-effect waves-light btn">^</a>
+                </div>
+                <div class="input-field col s1">
+                    <a id="btn_rotate_bottom" class="waves-effect waves-light btn">v</a>
+                </div>
+            </div>
 
-    /*=================== Shaders =========================*/
+            <div class="row">
+                <div class="input-field col s12">
+                    <div class="row" id="messages_list"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <input placeholder="Placeholder" id="message_input" type="text" class="validate">
+                    <label for="message_input">Message</label>
+                </div>
+                <div class="input-field col s6">
+                    <a id="btn_send" class="waves-effect waves-light btn">send</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <a id="btn_clear" class="waves-effect waves-light btn">clear</a>
+                </div>
+            </div>
+        </form>
+    </div>
 
-    var vertCode = 'attribute vec3 position;'+
-        'uniform mat4 Pmatrix;'+
-        'uniform mat4 Vmatrix;'+
-        'uniform mat4 Mmatrix;'+
-        'attribute vec3 color;'+//the color of the point
-        'varying vec3 vColor;'+
-
-        'void main(void) { '+//pre-built function
-        'gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);'+
-        'vColor = color;'+
-        '}';
-
-    var fragCode = 'precision mediump float;'+
-        'varying vec3 vColor;'+
-        'void main(void) {'+
-        'gl_FragColor = vec4(vColor, 1.);'+
-        '}';
-
-    var vertShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertShader, vertCode);
-    gl.compileShader(vertShader);
-
-    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragShader, fragCode);
-    gl.compileShader(fragShader);
-
-    var shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertShader);
-    gl.attachShader(shaderProgram, fragShader);
-    gl.linkProgram(shaderProgram);
-
-    /* ====== Associating attributes to vertex shader =====*/
-    var Pmatrix = gl.getUniformLocation(shaderProgram, "Pmatrix");
-    var Vmatrix = gl.getUniformLocation(shaderProgram, "Vmatrix");
-    var Mmatrix = gl.getUniformLocation(shaderProgram, "Mmatrix");
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-    var position = gl.getAttribLocation(shaderProgram, "position");
-    gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0) ;
-
-    // Position
-    gl.enableVertexAttribArray(position);
-    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-    var color = gl.getAttribLocation(shaderProgram, "color");
-    gl.vertexAttribPointer(color, 3, gl.FLOAT, false,0,0) ;
-
-    // Color
-    gl.enableVertexAttribArray(color);
-    gl.useProgram(shaderProgram);
-
-    /*==================== MATRIX =====================*/
-
-    function get_projection(angle, a, zMin, zMax) {
-        var ang = Math.tan((angle*.5)*Math.PI/180);//angle*.5
-        return [
-            0.5/ang, 0 , 0, 0,
-            0, 0.5*a/ang, 0, 0,
-            0, 0, -(zMax+zMin)/(zMax-zMin), -1,
-            0, 0, (-2*zMax*zMin)/(zMax-zMin), 0
-        ];
-    }
-
-    var proj_matrix = get_projection(40, canvas.width/canvas.height, 1, 100);
-
-    var mov_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-    var view_matrix = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-
-    // translating z
-    view_matrix[14] = view_matrix[14]-6;//zoom
-
-    /*==================== Rotation ====================*/
-
-    function rotateZ(m, angle) {
-        var c = Math.cos(angle);
-        var s = Math.sin(angle);
-        var mv0 = m[0], mv4 = m[4], mv8 = m[8];
-
-        m[0] = c*m[0]-s*m[1];
-        m[4] = c*m[4]-s*m[5];
-        m[8] = c*m[8]-s*m[9];
-
-        m[1]=c*m[1]+s*mv0;
-        m[5]=c*m[5]+s*mv4;
-        m[9]=c*m[9]+s*mv8;
-    }
-
-    function rotateX(m, angle) {
-        var c = Math.cos(angle);
-        var s = Math.sin(angle);
-        var mv1 = m[1], mv5 = m[5], mv9 = m[9];
-
-        m[1] = m[1]*c-m[2]*s;
-        m[5] = m[5]*c-m[6]*s;
-        m[9] = m[9]*c-m[10]*s;
-
-        m[2] = m[2]*c+mv1*s;
-        m[6] = m[6]*c+mv5*s;
-        m[10] = m[10]*c+mv9*s;
-    }
-
-    function rotateY(m, angle) {
-        var c = Math.cos(angle);
-        var s = Math.sin(angle);
-        var mv0 = m[0], mv4 = m[4], mv8 = m[8];
-
-        m[0] = c*m[0]+s*m[2];
-        m[4] = c*m[4]+s*m[6];
-        m[8] = c*m[8]+s*m[10];
-
-        m[2] = c*m[2]-s*mv0;
-        m[6] = c*m[6]-s*mv4;
-        m[10] = c*m[10]-s*mv8;
-    }
-
-    /*================= Drawing ===========================*/
-    var time_old = 0;
-
-    var animate = function(time) {
-
-        var dt = time-time_old;
-        rotateZ(mov_matrix, dt*0.001);//time
-        rotateY(mov_matrix, dt*0.001);
-        rotateX(mov_matrix, dt*0.001);
-        time_old = time;
-
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-        gl.clearColor(0.5, 0.5, 0.5, 0.9);
-        gl.clearDepth(1.0);
-
-        gl.viewport(0.0, 0.0, canvas.width, canvas.height);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
-        gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
-        gl.uniformMatrix4fv(Mmatrix, false, mov_matrix);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
-        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-
-        window.requestAnimationFrame(animate);
-    }
-    animate(0);
-</script>
 </body>
 </html>
