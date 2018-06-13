@@ -56,6 +56,17 @@
         #checkbox {
             margin-left: 30px;
         }
+        .container {
+            position: relative;
+        }
+
+        #text {
+            background-color: transparent;  /* needed because webgl-tutoraisl.css sets canvas bg color to white */
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 10;
+        }
     </style>
     <script src="../config/config.js"></script>
     <script>
@@ -89,7 +100,27 @@
     </div>
     </div>
 
-    <canvas width = "800" height = "500" id = "my_Canvas"></canvas>
+    <div class="row">
+
+        <form class="col s12">
+
+            <div class="row">
+
+                <div id="temp_container" class="col s2">
+                    120C
+                    -122C
+                </div>
+
+                <div class="container col s10">
+                    <canvas width = "800" height = "500" id = "my_Canvas"></canvas>
+                    <canvas width = "800" height = "500" id = "text"></canvas>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+
     <a id="btn_save_simulation" class="waves-effect waves-light btn">Save simulation</a>
 
 
@@ -99,16 +130,16 @@
 
             <div class="row">
                 <div class="input-field col s1">
-                    <a id="btn_rotate_left" class="waves-effect waves-light btn"><</a>
+                    <a id="btn_rotate_left" class="waves-effect waves-light btn">^</a>
                 </div>
                 <div class="input-field col s1">
-                    <a id="btn_rotate_right" class="waves-effect waves-light btn">></a>
+                    <a id="btn_rotate_right" class="waves-effect waves-light btn">v</a>
                 </div>
                 <div class="input-field col s1">
-                    <a id="btn_rotate_up" class="waves-effect waves-light btn">^</a>
+                    <a id="btn_rotate_up" class="waves-effect waves-light btn"><</a>
                 </div>
                 <div class="input-field col s1">
-                    <a id="btn_rotate_bottom" class="waves-effect waves-light btn">v</a>
+                    <a id="btn_rotate_bottom" class="waves-effect waves-light btn">></a>
                 </div>
             </div>
 

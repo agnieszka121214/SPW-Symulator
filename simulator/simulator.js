@@ -17,6 +17,14 @@ var controller = {
     vertices : [9,9,9],
     temperatures : [],
 
+    s_indices : [0,1,2,1,2,3],
+    s_colors : [1,0,0, 1,0,0,
+        0,0,1, 0,0,1],
+    s_vertices : [
+        -1 - 3 , -1 -1  , 0 ,    0- 3 , -1 -1, 0,
+        -1 - 3 , 0 + 2  , 0 ,    0- 3 , 0 + 2, 0],
+    s_temperatures : [],
+
     btn_save_simulation : null,
 
     filename : null,
@@ -28,14 +36,25 @@ var controller = {
     btn_rotate_top : null,
     btn_rotate_bottom : null,
 
+    textCanvas : null,
+    textCanvasCtx : null,
+
+    temp_container : null,
+
     onCreate: function () { },
 
     onDeviceReady: function () {
+
+        // look up the text canvas.
+        this.textCanvas = document.getElementById("text");
+        this.textCanvasCtx = this.textCanvas.getContext("2d");
 
         this.btn_rotate_left = $('#btn_rotate_left');
         this.btn_rotate_right = $('#btn_rotate_right');
         this.btn_rotate_top = $('#btn_rotate_top');
         this.btn_rotate_bottom = $('#btn_rotate_bottom');
+
+        this.temp_container = $('#temp_container');
 
         this.btn_send = $('#btn_send');
         this.btn_clear = $("#btn_clear");
@@ -237,6 +256,8 @@ var controller = {
         var min =  temp.min();
         var max =  temp.max();
 
+        controller.temp_container.html( "min:" + min + "C \n" + "max:" + max + "C" );
+
         var col = [0,0,0];
         for(var i = 0; i < temp.length ; i++ ){
             var c = (temp[i] - min)/(max - min)*100;
@@ -271,6 +292,21 @@ var controller = {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
+        // Create and store data into vertex buffer
+        var vertex_buffer_s = gl.createBuffer ();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer_s);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(controller.s_vertices), gl.STATIC_DRAW);
+
+        // Create and store data into color buffer
+        var color_buffer_s = gl.createBuffer ();
+        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer_s);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(controller.s_colors), gl.STATIC_DRAW);
+
+        // Create and store data into index buffer
+        var index_buffer_s = gl.createBuffer ();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer_s);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(controller.s_indices), gl.STATIC_DRAW);
+
         /*=================== Shaders =========================*/
 
         var vertCode = 'attribute vec3 position;'+
@@ -299,29 +335,17 @@ var controller = {
         gl.shaderSource(fragShader, fragCode);
         gl.compileShader(fragShader);
 
-        var shaderProgram = gl.createProgram();
-        gl.attachShader(shaderProgram, vertShader);
-        gl.attachShader(shaderProgram, fragShader);
-        gl.linkProgram(shaderProgram);
+        controller.shaderProgram = gl.createProgram();
+        gl.attachShader(controller.shaderProgram, vertShader);
+        gl.attachShader(controller.shaderProgram, fragShader);
+        gl.linkProgram(controller.shaderProgram);
 
         /* ====== Associating attributes to vertex shader =====*/
-        var Pmatrix = gl.getUniformLocation(shaderProgram, "Pmatrix");
-        var Vmatrix = gl.getUniformLocation(shaderProgram, "Vmatrix");
-        var Mmatrix = gl.getUniformLocation(shaderProgram, "Mmatrix");
+        var Pmatrix = gl.getUniformLocation(controller.shaderProgram, "Pmatrix");
+        var Vmatrix = gl.getUniformLocation(controller.shaderProgram, "Vmatrix");
+        var Mmatrix = gl.getUniformLocation(controller.shaderProgram, "Mmatrix");
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
-        var position = gl.getAttribLocation(shaderProgram, "position");
-        gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0) ;
-
-        // Position
-        gl.enableVertexAttribArray(position);
-        gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
-        var color = gl.getAttribLocation(shaderProgram, "color");
-        gl.vertexAttribPointer(color, 3, gl.FLOAT, false,0,0) ;
-
-        // Color
-        gl.enableVertexAttribArray(color);
-        gl.useProgram(shaderProgram);
+        gl.useProgram(controller.shaderProgram);
 
         /*==================== MATRIX =====================*/
 
@@ -404,6 +428,21 @@ var controller = {
             gl.clearColor(0.5, 0.5, 0.5, 0.9);
             gl.clearDepth(1.0);
 
+
+            controller.textCanvasCtx.clearRect(0, 0, controller.textCanvasCtx.width, controller.textCanvasCtx.height);
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+            var position = gl.getAttribLocation(controller.shaderProgram, "position");
+            gl.vertexAttribPointer(position, 3, gl.FLOAT, false,0,0) ;
+            // Position
+            gl.enableVertexAttribArray(position);
+            gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+            var color = gl.getAttribLocation(controller.shaderProgram, "color");
+            gl.vertexAttribPointer(color, 3, gl.FLOAT, false,0,0) ;
+            // Color
+            gl.enableVertexAttribArray(color);
+
+
             gl.viewport(0.0, 0.0, canvas.width, canvas.height);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
@@ -411,6 +450,25 @@ var controller = {
             gl.uniformMatrix4fv(Mmatrix, false, mov_matrix);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
             gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer_s);
+            var position2 = gl.getAttribLocation(controller.shaderProgram, "position");
+            gl.vertexAttribPointer(position2, 3, gl.FLOAT, false,0,0) ;
+            // Position
+            gl.enableVertexAttribArray(position2);
+            gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer_s);
+            var color2 = gl.getAttribLocation(controller.shaderProgram, "color");
+            gl.vertexAttribPointer(color2, 3, gl.FLOAT, false,0,0) ;
+            // Color
+            gl.enableVertexAttribArray(color2);
+
+            const M = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+            gl.uniformMatrix4fv(Pmatrix, false, proj_matrix);
+            gl.uniformMatrix4fv(Vmatrix, false, view_matrix);
+            gl.uniformMatrix4fv(Mmatrix, false, M);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer_s);
+            gl.drawElements(gl.TRIANGLES, controller.s_indices.length, gl.UNSIGNED_SHORT, 0);
 
             window.requestAnimationFrame(animate);
         }
